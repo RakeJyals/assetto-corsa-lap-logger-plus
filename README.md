@@ -26,6 +26,7 @@ config: layout_gp_b
 {'time': 135776, 'invalidated': False, 'lap': 1, 'splits': [47536, 46472, 41768]}
 {'time': 125238, 'invalidated': False, 'lap': 2, 'splits': [39054, 44658, 41526]}
 ```
+Times are in milliseconds.
 Note that in this form, this data can be incorportated into a pandas dataframe using pd.DataFrame.from_records(data) where data is the list of rows of this file (minus the metadata)
 > TODO: This log can then be visualised as a graph in order to inspect lap splits/times.
 
