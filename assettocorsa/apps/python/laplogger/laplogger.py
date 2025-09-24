@@ -12,6 +12,7 @@ import os
 APP_NAME = "Lap Logger"
 # Because the script is run from the context of the main .exe we need to point to provide a relative path to this script.
 LOG_DIR = "apps/python/laplogger/logs"
+# TODO: config file with desired log path
 
 
 # -----------------------------------------
@@ -47,7 +48,8 @@ def acMain(ac_version):
 	appWindow = ac.newApp(APP_NAME)
 	ac.setSize(appWindow, 400, 200)
 
-	# No idea what this is, wasn't working when I forked the project
+	# This was commented out when I forked this project, but this would just activate the app handlers at the bottom which
+	# only send console logs and toggle the "active" variable, which is unused
 	#ac.addOnAppActivatedListener(appWindow, onAppActivated)
 	#ac.addOnAppDismissedListener(appWindow, onAppDismissed)
 
