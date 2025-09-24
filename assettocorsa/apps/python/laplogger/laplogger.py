@@ -71,7 +71,7 @@ def acMain(ac_version):
 	ac.setPosition(lblCurrentTime, 3, 120)
 
 
-	openLog() # 
+	openLog() # Opens log file to writing
 
 	return APP_NAME
 
@@ -162,7 +162,7 @@ def openLog():
 	'''
 
 	# Create a log name based on the curent vehicle-track combination
-	LOG_NAME = "{}-{}-{}.acl".format(ac.getCarName(0), ac.getTrackName(0), ac.getTrackConfiguration(0))
+	LOG_NAME = "{}-{}-{}.txt".format(ac.getCarName(0), ac.getTrackName(0), ac.getTrackConfiguration(0))
 	# TODO: Modify file format to include datetime, driver name (ac.getDriverName(0))
 	# TODO If no track configration is available, write "default"
 	# TODO Condider creating a spacer between log entries from different sessions.
@@ -181,7 +181,7 @@ def openLog():
 
 
 def initLog():
-	'''Appends metadate to file'''
+	'''Appends metadata to file'''
 	carNameLine =		"car: {}".format(ac.getCarName(0))
 	trackNameLine =		"track: {}".format(ac.getTrackName(0))
 	trackConfigLine =	"config: {}".format(ac.getTrackConfiguration(0))
