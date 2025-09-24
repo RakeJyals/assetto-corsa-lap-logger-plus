@@ -183,7 +183,7 @@ def openLog():
 	'''
 
 def initLog():
-	'''Appends metadata to file'''
+	'''Appends metadata to file, currently unused'''
 	carNameLine =		"car: {}".format(ac.getCarName(0))
 	trackNameLine =		"track: {}".format(ac.getTrackName(0))
 	trackConfigLine =	"config: {}".format(ac.getTrackConfiguration(0))
@@ -195,7 +195,7 @@ def writeLogEntry():
 	'''Writes a new log entry to the log using the current state information.'''
 	global logFile
 
-	lapData = {  # Todo: add fuel amount, tire wear
+	lapData = {  # TODO: add fuel amount, tire wear (info.physics.fuel, info.physics.tireWear from sim_info.py.info via sidekick)
 		"lap" : lapCount,
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
 		"invalidated" : lastLapInvalidated,
