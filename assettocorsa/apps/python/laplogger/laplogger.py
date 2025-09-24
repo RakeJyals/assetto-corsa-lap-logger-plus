@@ -199,11 +199,13 @@ def writeLogEntry():
 	'''Writes a new log entry to the log using the current state information.'''
 	global logFile
 
-	lapData = {  # TODO: add fuel amount, tire wear (info.physics.fuel, info.physics.tireWear from sim_info.py.info via sidekick)
+	lapData = {
 		"lap" : lapCount,
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
 		"invalidated" : lastLapInvalidated,
-		"splits" : ac.getLastSplits(0)
+		"splits" : ac.getLastSplits(0),
+		"fuel" : info.physics.fuel,
+		"tire_wear" : info.physics.tyreWear
 	}
 
 	logFile.write("{}\n".format(lapData))
