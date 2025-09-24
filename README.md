@@ -2,27 +2,9 @@
 
 A lap-logging app for [Assetto Corsa](https://www.assettocorsa.net/home-ac).
 
-When active the app will record lap times for the current track-vehicle combination, allowing you to analyse your improvement over time in a particular vehicle on a particular track.
+When active the app will record lap times for the current track-vehicle combination.
 
 ---
-
-## Features
-
-> (Theoretical. Many of these are goals for the future.)
-
-Features of in-game app:
-
-- Recording of track-vehicle combination lap times.
-- Recording of additional information (track conditions, vehicle setup) for in-depth analysis.
-- Displaying previous laps for immediate comparison in-game.
-
-Features of viewer app:
-
-- Viewer app for graphing lap times.
-- Ability to compare different setups and conditions.
-- Ability to compare different vehicles on the same track.
-- Live update via database web hooks, allows user to display the app on a separate screen and view up-to-date information.
-- Possible mobile companion app that mimics to the desktop app.
 
 ## App
 
@@ -44,7 +26,7 @@ config: layout_gp_b
 {'time': 135776, 'invalidated': False, 'lap': 1, 'splits': [47536, 46472, 41768]}
 {'time': 125238, 'invalidated': False, 'lap': 2, 'splits': [39054, 44658, 41526]}
 ```
-
+Note that in this form, this data can be incorportated into a pandas dataframe using pd.DataFrame.from_records(data) where data is the list of rows of this file (minus the metadata)
 > TODO: This log can then be visualised as a graph in order to inspect lap splits/times.
 
 ### Logging
@@ -55,8 +37,6 @@ There are two kinds of AC log commands available:
 - `ac.console` which logs to `log.txt` and is available via the console (Home key) in game. This persists only while running.
 
 By default, console logs are located at `C:\User\My Documents\Assetto Corsa\logs`
-
-> TODO: Replace with an image containing only the Lap Logger app.
 
 ![Image](/Documentation/20190518203937-HUD.jpg)
 
