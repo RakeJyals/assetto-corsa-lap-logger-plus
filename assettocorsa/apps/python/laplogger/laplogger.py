@@ -176,9 +176,11 @@ def openLog():
 	global logFile
 	logFile = open("{}/{}".format(LOG_DIR, LOG_NAME), "a+")
 
+	# I disabled this due to redundancy and having a file format that is easier to work with
+	'''
 	if shouldInit:
 		initLog()
-
+	'''
 
 def initLog():
 	'''Appends metadata to file'''
