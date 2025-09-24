@@ -42,14 +42,16 @@ def acMain(ac_version):
 
 	log("Starting {}".format(APP_NAME))
 
+	# Setting up app window
 	global appWindow
 	appWindow = ac.newApp(APP_NAME)
 	ac.setSize(appWindow, 400, 200)
 
-	# TODO Get this working
+	# No idea what this is, wasn't working when I forked the project
 	#ac.addOnAppActivatedListener(appWindow, onAppActivated)
 	#ac.addOnAppDismissedListener(appWindow, onAppDismissed)
 
+	# Display labels
 	global lblLapCount
 	lblLapCount = ac.addLabel(appWindow, "")
 	ac.setPosition(lblLapCount, 3, 30)
@@ -66,7 +68,8 @@ def acMain(ac_version):
 	lblCurrentTime = ac.addLabel(appWindow, "")
 	ac.setPosition(lblCurrentTime, 3, 120)
 
-	openLog()
+
+	openLog() # 
 
 	return APP_NAME
 
@@ -76,12 +79,14 @@ def acUpdate(deltaT):
 	# if (not active):
 		# return
 	
+	# Functions below are in house
 	updateState()
 	refreshUI()
 
+
 def acShutdown():
-	# TODO Save lap logs
-	closeLog()
+	# TODO Save lap logs (does this not happen automatically?)
+	closeLog()  # Just closes file
 
 
 # -----------------------------------------
@@ -91,6 +96,7 @@ def acShutdown():
 def log(message, level = "INFO"):
 	'''Logs a message to the py_log with the (optional) specified level tag.'''
 	ac.log("laplogger [{}]: {}".format(level, message))
+
 
 def getFormattedLapTime(lapTime):
 	'''Returns a lap time string formatted for display.'''
@@ -104,21 +110,24 @@ def getFormattedLapTime(lapTime):
 
 	return "{}:{:02d}:{:03d}".format(minutes, seconds, millis)
 
+
 def updateState():
 	'''Updates the state of all variables required for logging.'''
 
 	global lastLapInvalidated
 
-	# Not working
-	if ac.getCarState(0, acsys.CS.LapInvalidated) != 0:
+	# Not working, important to get fixed
+	if ac.getCarState(0, acsys.CS.LapInvalidated) != 0:  # Tested value can be 0 or 1
 		lastLapInvalidated = True
+		# TODO: add display feature to test lap invalidation
 
+	
+	# Record lap info if new lap is started
 	global lapCount
 	currentLap = ac.getCarState(0, acsys.CS.LapCount)
 	if (lapCount < currentLap):
 		lapCount = currentLap
 		writeLogEntry()
-
 		lastLapInvalidated = False
 
 
@@ -139,9 +148,6 @@ def refreshUI():
 	global lblCurrentTime
 	ac.setText(lblCurrentTime, "Time: {}".format(getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))
 
-	# TODO
-	# Personal best
-	# Graph
 
 
 # -----------------------------------------
@@ -149,12 +155,16 @@ def refreshUI():
 # -----------------------------------------
 
 def openLog():
-	
+	'''
+	Opens log file, creating it if necessary
+	'''
+
 	# Create a log name based on the curent vehicle-track combination
 	LOG_NAME = "{}-{}-{}.acl".format(ac.getCarName(0), ac.getTrackName(0), ac.getTrackConfiguration(0))
-
+	# TODO: Modify file format to include datetime, driver name (ac.getDriverName(0))
 	# TODO If no track configration is available, write "default"
 	# TODO Condider creating a spacer between log entries from different sessions.
+
 
 	if not os.path.exists(LOG_DIR):
 		os.mkdir(LOG_DIR)
@@ -167,19 +177,21 @@ def openLog():
 	if shouldInit:
 		initLog()
 
+
 def initLog():
-	'''Initialises the log file with important information regarding this log.'''
+	'''Appends metadate to file'''
 	carNameLine =		"car: {}".format(ac.getCarName(0))
 	trackNameLine =		"track: {}".format(ac.getTrackName(0))
 	trackConfigLine =	"config: {}".format(ac.getTrackConfiguration(0))
 
 	logFile.write("{}\n{}\n{}\n\n".format(carNameLine, trackNameLine, trackConfigLine))
 
+
 def writeLogEntry():
 	'''Writes a new log entry to the log using the current state information.'''
 	global logFile
 
-	lapData = {
+	lapData = {  # Todo: add fuel amount, tire wear
 		"lap" : lapCount,
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
 		"invalidated" : lastLapInvalidated,
@@ -187,6 +199,7 @@ def writeLogEntry():
 	}
 
 	logFile.write("{}\n".format(lapData))
+
 
 def closeLog():
 	global logFile
@@ -200,6 +213,7 @@ def onAppDismissed():
 	ac.console("LapLogger Dismissed")
 	active = False
 	log("Dismissed")
+
 
 def onAppActivated():
 	ac.console("LapLogger Activated")
