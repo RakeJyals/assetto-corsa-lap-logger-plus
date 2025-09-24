@@ -4,6 +4,10 @@ import acsys
 
 import os
 
+# Currently needs to be manually installed
+# TODO: Make import from sidekick automatic
+from sim_info import info
+
 # -----------------------------------------
 # Constants
 # -----------------------------------------
