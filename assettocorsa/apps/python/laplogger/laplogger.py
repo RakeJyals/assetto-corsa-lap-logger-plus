@@ -176,7 +176,7 @@ def openLog():
 	'''
 
 	# Create a log name based on datetime and driver
-	LOG_NAME = "{}_{}.txt".format(datetime.now().replace(" ", "_").replace(":", "-").split(".")[0], ac.getDriverName(0))
+	LOG_NAME = "{}_{}.txt".format(str(datetime.now()).replace(" ", "_").replace(":", "-").split(".")[0], ac.getDriverName(0))
 
 
 	if not os.path.exists(LOG_DIR):
