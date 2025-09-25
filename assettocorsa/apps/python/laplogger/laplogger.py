@@ -7,6 +7,11 @@ from datetime import datetime
 
 from sim_info import info
 
+'''
+WARNING: Current way of writing to files breaks when using "Return to Garae" function in AC
+'''
+# TODO: Fix above
+
 # -----------------------------------------
 # Constants
 # -----------------------------------------
