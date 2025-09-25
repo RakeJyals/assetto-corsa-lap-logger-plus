@@ -72,6 +72,13 @@ def acMain(ac_version):
 	lblCurrentTime = ac.addLabel(appWindow, "")
 	ac.setPosition(lblCurrentTime, 3, 120)
 
+	global lastLapInvalidated_display
+	lastLapInvalidated_display = ac.addLabel(appWindow, "")
+	ac.setPosition(lastLapInvalidated_display, 3, 150)
+
+	global off_track_display
+	off_track_display = ac.addLabel(appWindow, "")
+	ac.setPosition(off_track_display, 3, 180)
 
 	openLog() # Opens log file to writing
 
@@ -123,7 +130,6 @@ def updateState():
 	# Not working, important to get fixed
 	if ac.getCarState(0, acsys.CS.LapInvalidated) != 0:  # Tested value can be 0 or 1
 		lastLapInvalidated = True
-		# TODO: add display feature to test lap invalidation
 
 	
 	# Record lap info if new lap is started
@@ -151,6 +157,12 @@ def refreshUI():
 
 	global lblCurrentTime
 	ac.setText(lblCurrentTime, "Time: {}".format(getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))
+
+	global lastLapInvalidated_display, lastLapInvalidated
+	ac.setText(lastLapInvalidated_display, "Lap Invalid {}".format(lastLapInvalidated))
+
+	global off_track_display
+	ac.setText(off_track_display, "Off Track {}".format(ac.getCarState(0, acsys.CS.LapInvalidated)))
 
 
 
@@ -195,15 +207,18 @@ def initLog():
 
 def writeLogEntry():
 	'''Writes a new log entry to the log using the current state information.'''
+	# TODO: Conssider having all lap data be cached and write to file upon game close
 	global logFile
+
+	tire_wear = info.physics.tyreWear
 
 	lapData = {
 		"lap" : lapCount,
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
 		# "invalidated" : lastLapInvalidated,
 		"splits" : ac.getLastSplits(0),
-		"fuel" : info.physics.fuel,
-		"tire_wear" : info.physics.tyreWear
+		"fuel" : round(info.physics.fuel, 2),
+		"tire_wear" : [round(tire_wear[i], 2) for i in range(4)]
 	}
 
 	logFile.write("{}\n".format(lapData))
