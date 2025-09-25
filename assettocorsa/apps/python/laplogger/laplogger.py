@@ -3,6 +3,7 @@ import ac
 import acsys
 
 import os
+from datetime import datetime
 
 from sim_info import info
 
@@ -96,7 +97,6 @@ def acUpdate(deltaT):
 
 
 def acShutdown():
-	# TODO Save lap logs (does this not happen automatically?)
 	closeLog()  # Just closes file
 
 
@@ -175,11 +175,8 @@ def openLog():
 	Opens log file, creating it if necessary
 	'''
 
-	# Create a log name based on the curent vehicle-track combination
-	LOG_NAME = "{}-{}-{}.txt".format(ac.getCarName(0), ac.getTrackName(0), ac.getTrackConfiguration(0))
-	# TODO: Modify file format to include datetime, driver name (ac.getDriverName(0))
-	# TODO If no track configration is available, write "default"
-	# TODO Condider creating a spacer between log entries from different sessions.
+	# Create a log name based on datetime and driver
+	LOG_NAME = "{}_{}.txt".format(datetime.now().replace(" ", "_").replace(":", "-").split(".")[0], ac.getDriverName(0))
 
 
 	if not os.path.exists(LOG_DIR):
