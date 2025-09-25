@@ -181,7 +181,7 @@ def openLog():
 	'''
 
 	# Create a log name based on datetime and driver
-	LOG_NAME = "{}_{}.txt".format(str(datetime.now()).replace(" ", "_").replace(":", "-").split(".")[0], ac.getDriverName(0))
+	LOG_NAME = "{}_{}.csv".format(str(datetime.now()).replace(" ", "_").replace(":", "-").split(".")[0], ac.getDriverName(0))
 
 
 	if not os.path.exists(LOG_DIR):
@@ -191,6 +191,10 @@ def openLog():
 		
 	global logFile
 	logFile = open("{}/{}".format(LOG_DIR, LOG_NAME), "a+")
+
+	# Set columns in csv, lap number is excluded because pandas uses it as index
+	logFile.write("'time', 'fuel', 'tire_wear1', 'tire_wear2', 'tire_wear3', 'tire_wear4'")
+
 
 	# I disabled this due to redundancy and having a file format that is easier to work with
 	'''
@@ -214,14 +218,14 @@ def writeLogEntry():
 
 	tire_wear = info.physics.tyreWear
 
-	lapData = {
-		"lap" : lapCount,
-		"time" : ac.getCarState(0, acsys.CS.LastLap),
+	lapData = str([
+		lapCount,  # Number of completed laps
+		ac.getCarState(0, acsys.CS.LastLap),  # Lap Time
 		# "invalidated" : lastLapInvalidated,
 		# "splits" : ac.getLastSplits(0),
-		"fuel" : round(info.physics.fuel, 2),
-		"tire_wear" : [round(tire_wear[i], 2) for i in range(4)]
-	}
+		round(info.physics.fuel, 2),  # Amount of fuel (L)
+		str([round(tire_wear[i], 2) for i in range(4)])[1:-1]  # Tire wear
+	])[1:-1]
 
 	logFile.write("{}\n".format(lapData))
 
