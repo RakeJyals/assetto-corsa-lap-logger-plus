@@ -48,7 +48,7 @@ def acMain(ac_version):
 	# Setting up app window
 	global appWindow
 	appWindow = ac.newApp(APP_NAME)
-	ac.setSize(appWindow, 400, 200)
+	ac.setSize(appWindow, 150, 200)
 
 	# This was commented out when I forked this project, but this would just activate the app handlers at the bottom which
 	# only send console logs and toggle the "active" variable, which is unused
@@ -200,7 +200,7 @@ def writeLogEntry():
 	lapData = {
 		"lap" : lapCount,
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
-		"invalidated" : lastLapInvalidated,
+		# "invalidated" : lastLapInvalidated,
 		"splits" : ac.getLastSplits(0),
 		"fuel" : info.physics.fuel,
 		"tire_wear" : info.physics.tyreWear
