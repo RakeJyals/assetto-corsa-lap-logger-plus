@@ -213,7 +213,7 @@ def writeLogEntry():
 		"lap" : lapCount,
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
 		# "invalidated" : lastLapInvalidated,
-		"splits" : ac.getLastSplits(0),
+		# "splits" : ac.getLastSplits(0),
 		"fuel" : round(info.physics.fuel, 2),
 		"tire_wear" : [round(tire_wear[i], 2) for i in range(4)]
 	}
