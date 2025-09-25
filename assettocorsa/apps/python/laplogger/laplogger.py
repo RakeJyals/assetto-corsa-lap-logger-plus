@@ -8,7 +8,7 @@ from datetime import datetime
 from sim_info import info
 
 '''
-WARNING: Current way of writing to files breaks when using "Return to Garae" function in AC
+WARNING: Current way of writing to files breaks when using "Return to Garage" function in AC
 '''
 # TODO: Fix above
 
@@ -193,7 +193,7 @@ def openLog():
 	logFile = open("{}/{}".format(LOG_DIR, LOG_NAME), "a+")
 
 	# Set columns in csv, lap number is excluded because pandas uses it as index
-	logFile.write("'time', 'fuel', 'tire_wear1', 'tire_wear2', 'tire_wear3', 'tire_wear4'")
+	logFile.write("'time', 'fuel', 'tire_wear1', 'tire_wear2', 'tire_wear3', 'tire_wear4'\n")
 
 
 	# I disabled this due to redundancy and having a file format that is easier to work with
