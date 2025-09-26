@@ -90,6 +90,7 @@ def acMain(ac_version):
 	'''
 	save_button = ac.addButton(appWindow, "")
 	ac.setPosition(save_button, 70, 30)
+	ac.addOnClickedListener(save_button, openLog)
 	'''
 
 	openLog() # Opens log file to writing
