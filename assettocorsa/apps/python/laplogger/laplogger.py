@@ -220,15 +220,16 @@ def writeLogEntry():  # TODO: Refactor to create string that can be piped into c
 
 	tire_wear = info.physics.tyreWear
 
-	# TODO: Refactor
-	lapData = str([
-		lapCount,  # Number of completed laps
-		ac.getCarState(0, acsys.CS.LastLap),  # Lap Time
-		# "invalidated" : lastLapInvalidated,
-		# "splits" : ac.getLastSplits(0),
-		round(info.physics.fuel, 2),  # Amount of fuel (L)
-		str([round(tire_wear[i], 2) for i in range(4)])[1:-1]  # Tire wear  # TODO: Get quote marks removed
-	])[1:-1]
+	lapData = "{},{},{},{},{},{},{}".format(
+		lapCount,
+		ac.getCarState(0, acsys.CS.LastLap),
+		round(info.physics.fuel, 2),
+		round(tire_wear[0], 2),
+		round(tire_wear[1], 2),
+		round(tire_wear[2], 2),
+		round(tire_wear[3], 2)
+		# lastLapInvalidated
+	)
 
 	logFile.write("{}\n".format(lapData))
 
