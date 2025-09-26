@@ -198,21 +198,6 @@ def openLog():  # Should be refactored to write log
 	logFile.write("time,fuel,tire_wear1,tire_wear2,tire_wear3,tire_wear4\n")
 
 
-	# I disabled this due to redundancy and having a file format that is easier to work with
-	'''
-	if shouldInit:
-		initLog()
-	'''
-
-def initLog():  # TODO: Deprecate
-	'''Appends metadata to file, currently unused'''
-	carNameLine =		"car: {}".format(ac.getCarName(0))
-	trackNameLine =		"track: {}".format(ac.getTrackName(0))
-	trackConfigLine =	"config: {}".format(ac.getTrackConfiguration(0))
-
-	logFile.write("{}\n{}\n{}\n\n".format(carNameLine, trackNameLine, trackConfigLine))
-
-
 def writeLogEntry():  # TODO: Refactor to create string that can be piped into csv output
 	'''Writes a new log entry to the log using the current state information.'''
 	# TODO: Have all lap data be cached and write to file upon button press
