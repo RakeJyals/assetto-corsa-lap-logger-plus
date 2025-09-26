@@ -86,6 +86,8 @@ def acMain(ac_version):
 	off_track_display = ac.addLabel(appWindow, "")
 	ac.setPosition(off_track_display, 3, 180)
 
+	# TODO: Save button
+
 	openLog() # Opens log file to writing
 
 	return APP_NAME
@@ -175,12 +177,12 @@ def refreshUI():
 # Logging
 # -----------------------------------------
 
-def openLog():
+def openLog():  # Should be refactored to write log
 	'''
 	Opens log file, creating it if necessary
 	'''
 
-	# Create a log name based on datetime and driver
+	# Create a log name based on datetime (down to second) and driver
 	LOG_NAME = "{}_{}.csv".format(str(datetime.now()).replace(" ", "_").replace(":", "-").split(".")[0], ac.getDriverName(0))
 
 
@@ -193,7 +195,7 @@ def openLog():
 	logFile = open("{}/{}".format(LOG_DIR, LOG_NAME), "a+")
 
 	# Set columns in csv, lap number is excluded because pandas uses it as index
-	logFile.write("'time', 'fuel', 'tire_wear1', 'tire_wear2', 'tire_wear3', 'tire_wear4'\n")
+	logFile.write("time,fuel,tire_wear1,tire_wear2,tire_wear3,tire_wear4\n")
 
 
 	# I disabled this due to redundancy and having a file format that is easier to work with
@@ -202,7 +204,7 @@ def openLog():
 		initLog()
 	'''
 
-def initLog():
+def initLog():  # TODO: Deprecate
 	'''Appends metadata to file, currently unused'''
 	carNameLine =		"car: {}".format(ac.getCarName(0))
 	trackNameLine =		"track: {}".format(ac.getTrackName(0))
@@ -211,26 +213,27 @@ def initLog():
 	logFile.write("{}\n{}\n{}\n\n".format(carNameLine, trackNameLine, trackConfigLine))
 
 
-def writeLogEntry():
+def writeLogEntry():  # TODO: Refactor to create string that can be piped into csv output
 	'''Writes a new log entry to the log using the current state information.'''
-	# TODO: Conssider having all lap data be cached and write to file upon game close
+	# TODO: Have all lap data be cached and write to file upon button press
 	global logFile
 
 	tire_wear = info.physics.tyreWear
 
+	# TODO: Refactor
 	lapData = str([
 		lapCount,  # Number of completed laps
 		ac.getCarState(0, acsys.CS.LastLap),  # Lap Time
 		# "invalidated" : lastLapInvalidated,
 		# "splits" : ac.getLastSplits(0),
 		round(info.physics.fuel, 2),  # Amount of fuel (L)
-		str([round(tire_wear[i], 2) for i in range(4)])[1:-1]  # Tire wear
+		str([round(tire_wear[i], 2) for i in range(4)])[1:-1]  # Tire wear  # TODO: Get quote marks removed
 	])[1:-1]
 
 	logFile.write("{}\n".format(lapData))
 
 
-def closeLog():
+def closeLog():  # TODO: Deprecate
 	global logFile
 	logFile.close()
 
