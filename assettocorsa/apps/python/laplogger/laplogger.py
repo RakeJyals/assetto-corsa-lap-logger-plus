@@ -147,7 +147,7 @@ def updateState():
 	# Record lap info if new lap is started
 	global lapCount
 	currentLap = ac.getCarState(0, acsys.CS.LapCount)
-	if (lapCount < currentLap):
+	if (lapCount < currentLap):  # TODO: Figure out why first response is 0
 		lapCount = currentLap
 		writeLogEntry()
 		lastLapInvalidated = False
