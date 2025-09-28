@@ -55,7 +55,7 @@ def acMain(ac_version):
 	global appWindow
 	appWindow = ac.newApp(APP_NAME)
 	ac.setSize(appWindow, 150, 200)
-
+	log("Initialized App Window")
 	# This was commented out when I forked this project, but this would just activate the app handlers at the bottom which
 	# only send console logs and toggle the "active" variable, which is unused
 	#ac.addOnAppActivatedListener(appWindow, onAppActivated)
@@ -186,7 +186,7 @@ def openLog():  # Should be refactored to write log
 	'''
 	Opens log file, creating it if necessary
 	'''
-
+	log("Starting openLog")
 	# Create a log name based on datetime (down to second) and driver
 	LOG_NAME = "{}_{}.csv".format(str(datetime.now()).replace(" ", "_").replace(":", "-").split(".")[0], ac.getDriverName(0))
 
@@ -201,7 +201,7 @@ def openLog():  # Should be refactored to write log
 
 	# Set columns in csv, lap number is excluded because pandas uses it as index
 	logFile.write("time,fuel,tire_wear1,tire_wear2,tire_wear3,tire_wear4\n")
-
+	log("Completed openLog")
 
 def writeLogEntry():  # TODO: Refactor to create string that can be piped into csv output
 	'''Writes a new log entry to the log using the current state information.'''
