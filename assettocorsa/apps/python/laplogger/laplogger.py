@@ -4,7 +4,7 @@ import acsys
 
 import os, platform
 from datetime import datetime
-from time import sleep
+
 
 if platform.architecture()[0] == "64bit":
 	sysdir = os.path.dirname(__file__)+'/stdlib64'
@@ -158,7 +158,6 @@ def updateState():
 	currentLap = ac.getCarState(0, acsys.CS.LapCount)
 	if (lapCount < currentLap):  # TODO: Figure out why first response is 0
 		lapCount = currentLap
-		sleep(5)
 		writeLogEntry()
 		lastLapInvalidated = False
 
