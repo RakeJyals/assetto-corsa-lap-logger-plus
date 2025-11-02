@@ -2,11 +2,19 @@ import sys
 import ac
 import acsys
 
-import os
+import os, platform
 from datetime import datetime
 from time import sleep
 
-from sim_info import info
+if platform.architecture()[0] == "64bit":
+	sysdir = os.path.dirname(__file__)+'/stdlib64'
+else:
+	sysdir = os.path.dirname(__file__)+'/stdlib'
+
+sys.path.insert(0, sysdir)
+os.environ['PATH'] = os.environ['PATH'] + ";."
+
+from loggerlibs.sim_info import info
 
 '''
 WARNING: Current way of writing to files breaks when using "Return to Garage" function in AC
