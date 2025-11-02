@@ -4,6 +4,7 @@ import acsys
 
 import os
 from datetime import datetime
+from time import sleep
 
 from sim_info import info
 
@@ -149,6 +150,7 @@ def updateState():
 	currentLap = ac.getCarState(0, acsys.CS.LapCount)
 	if (lapCount < currentLap):  # TODO: Figure out why first response is 0
 		lapCount = currentLap
+		sleep(5)
 		writeLogEntry()
 		lastLapInvalidated = False
 
