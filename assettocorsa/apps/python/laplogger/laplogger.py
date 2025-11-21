@@ -41,11 +41,15 @@ active = False
 appWindow = None
 logFile = None
 
+# AC window initializations (is this the best practice?)
 lblLapCount = None
 lblBestLap = None
 lblLastLap = None
 lblCurrentTime = None
+lblRecordCountdown = None
+lblDeltaT = None
 
+record_countdown = None
 lapCount = 0
 bestLap = 0
 lastLap = 0
@@ -87,13 +91,24 @@ def acMain(ac_version):
 	lblCurrentTime = ac.addLabel(appWindow, "")
 	ac.setPosition(lblCurrentTime, 3, 120)
 
+	"""
 	global lastLapInvalidated_display
-	lastLapInvalidated_display = ac.addLabel(appWindow, "")
+	lastLapInvalidated_display = ac.addLabel(appWindow, "")  # Is it right to initiate the variable here, compared to in the main?
 	ac.setPosition(lastLapInvalidated_display, 3, 150)
 
 	global off_track_display
 	off_track_display = ac.addLabel(appWindow, "")
 	ac.setPosition(off_track_display, 3, 180)
+	
+
+	global lblRecordCountdown
+	lblRecordCountdown = ac.addLabel(appWindow, "")
+	ac.setPosition(lblRecordCountdown, 3, 150)
+
+	global lblDeltaT
+	lblDeltaT = ac.addLabel(appWindow, "")
+	ac.setPosition(lblDeltaT, 3, 180)
+	"""
 
 	# TODO: Save button
 	'''
@@ -108,13 +123,14 @@ def acMain(ac_version):
 
 
 def acUpdate(deltaT):
+	# deltaT is in seconds!
 	
 	# if (not active):
 		# return
 	
 	# Functions below are in house
-	updateState()
-	refreshUI()
+	updateState(deltaT)
+	refreshUI(deltaT)
 
 
 def acShutdown():
@@ -143,26 +159,35 @@ def getFormattedLapTime(lapTime):
 	return "{}:{:02d}:{:03d}".format(minutes, seconds, millis)
 
 
-def updateState():
+def updateState(deltaT):
 	'''Updates the state of all variables required for logging.'''
 
 	global lastLapInvalidated
+	global record_countdown
+	global lapCount
 
-	# Not working, important to get fixed
+	# Not working, not important to get fixed
 	if ac.getCarState(0, acsys.CS.LapInvalidated) != 0:  # Tested value can be 0 or 1
 		lastLapInvalidated = True
 
 	
-	# Record lap info if new lap is started
-	global lapCount
+	# Record lap info once enough time has passed for all memory to update
+	if record_countdown:
+		if record_countdown < deltaT:
+			writeLogEntry()
+			lastLapInvalidated = False
+			record_countdown = None
+		else:
+			record_countdown -= deltaT
+
 	currentLap = ac.getCarState(0, acsys.CS.LapCount)
-	if (lapCount < currentLap):  # TODO: Figure out why first response is 0
+	if lapCount < currentLap:  # Check if player is on a new lap, then start countdown to log data if so
 		lapCount = currentLap
-		writeLogEntry()
-		lastLapInvalidated = False
+		record_countdown = 3
 
 
-def refreshUI():
+
+def refreshUI(deltaT):
 	'''Updates the state of the UI to reflect the latest data.'''
 
 	global lblLapCount, lapCount
@@ -179,13 +204,20 @@ def refreshUI():
 	global lblCurrentTime
 	ac.setText(lblCurrentTime, "Time: {}".format(getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))
 
+	"""
 	global lastLapInvalidated_display, lastLapInvalidated
 	ac.setText(lastLapInvalidated_display, "Lap Invalid {}".format(lastLapInvalidated))
 
 	global off_track_display
 	ac.setText(off_track_display, "Off Track {}".format(ac.getCarState(0, acsys.CS.LapInvalidated)))
+	
 
+	global lblRecordCountdown, record_countdown
+	ac.setText(lblRecordCountdown, "record_countdown: {}".format(record_countdown))
 
+	global lblDeltaT
+	ac.setText(lblDeltaT, "record_countdown: {}".format(deltaT))
+	"""
 
 # -----------------------------------------
 # Logging
