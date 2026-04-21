@@ -65,7 +65,7 @@ def acMain(ac_version):
 	log("Starting {}".format(APP_NAME))
 
 	# Setting up app window
-	global appWindow
+	global appWindow  # Is this global necessary?
 	appWindow = ac.newApp(APP_NAME)
 	ac.setSize(appWindow, 150, 200)
 	log("Initialized App Window")
@@ -75,21 +75,23 @@ def acMain(ac_version):
 	#ac.addOnAppDismissedListener(appWindow, onAppDismissed)
 
 	# Display labels
-	global lblLapCount
+	global lblLapCount  # TODO deprecate or replace with laps done in stint
 	lblLapCount = ac.addLabel(appWindow, "")
 	ac.setPosition(lblLapCount, 3, 30)
 
-	global lblBestLap
+	global lblBestLap  # TODO deprecate
 	lblBestLap = ac.addLabel(appWindow, "")
 	ac.setPosition(lblBestLap, 3, 60)
 
-	global lblLastLap
+	global lblLastLap  # TODO deprecate
 	lblLastLap = ac.addLabel(appWindow, "")
 	ac.setPosition(lblLastLap, 3, 90)
 
-	global lblCurrentTime
+	global lblCurrentTime  # TODO replace with time in stint
 	lblCurrentTime = ac.addLabel(appWindow, "")
 	ac.setPosition(lblCurrentTime, 3, 120)
+
+	# TODO window for time spent in pitlane
 
 	"""
 	global lastLapInvalidated_display
@@ -147,7 +149,7 @@ def log(message, level = "INFO"):
 
 
 def getFormattedLapTime(lapTime):
-	'''Returns a lap time string formatted for display.'''
+	'''Returns a lap time string formatted for display. lapTime is in miliseconds'''
 
 	if (not lapTime > 0):
 		return "--:--:--"
@@ -184,6 +186,10 @@ def updateState(deltaT):
 	if lapCount < currentLap:  # Check if player is on a new lap, then start countdown to log data if so
 		lapCount = currentLap
 		record_countdown = 3
+
+	# TODO experiment with IsEngineLimiterOn, NormalizedSplinePosition (position on track in 1d, [0,1]), 
+	# WorldPosition (multi-dimensional coordiantes), 
+	# Can pass car id: isCarInPitlane, isCarInPit (pitbox), isConnected?
 
 
 
@@ -244,7 +250,7 @@ def openLog():  # Should be refactored to write log
 	logFile.write("time,fuel,tire_wear1,tire_wear2,tire_wear3,tire_wear4\n")
 	log("Completed openLog")
 
-def writeLogEntry():  # TODO: Refactor to create string that can be piped into csv output
+def writeLogEntry():  # TODO: Refactor to create string that can be piped into csv or JSON output
 	'''Writes a new log entry to the log using the current state information.'''
 	# TODO: Have all lap data be cached and write to file upon button press
 	global logFile
