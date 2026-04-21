@@ -43,11 +43,7 @@ logFile = None
 
 # AC window initializations (is this the best practice?)
 lblLapCount = None
-lblBestLap = None
-lblLastLap = None
 lblCurrentTime = None
-lblRecordCountdown = None
-lblDeltaT = None
 
 record_countdown = None
 lapCount = 0
@@ -75,21 +71,13 @@ def acMain(ac_version):
 	#ac.addOnAppDismissedListener(appWindow, onAppDismissed)
 
 	# Display labels
-	global lblLapCount  # TODO deprecate or replace with laps done in stint
+	global lblLapCount  # Now used for laps done in stint
 	lblLapCount = ac.addLabel(appWindow, "")
 	ac.setPosition(lblLapCount, 3, 30)
 
-	global lblBestLap  # TODO deprecate
-	lblBestLap = ac.addLabel(appWindow, "")
-	ac.setPosition(lblBestLap, 3, 60)
-
-	global lblLastLap  # TODO deprecate
-	lblLastLap = ac.addLabel(appWindow, "")
-	ac.setPosition(lblLastLap, 3, 90)
-
-	global lblCurrentTime  # TODO replace with time in stint
+	global lblCurrentTime  # Now used for time in stint
 	lblCurrentTime = ac.addLabel(appWindow, "")
-	ac.setPosition(lblCurrentTime, 3, 120)
+	ac.setPosition(lblCurrentTime, 3, 60)
 
 	# TODO window for time spent in pitlane
 
@@ -101,18 +89,9 @@ def acMain(ac_version):
 	global off_track_display
 	off_track_display = ac.addLabel(appWindow, "")
 	ac.setPosition(off_track_display, 3, 180)
-	
-
-	global lblRecordCountdown
-	lblRecordCountdown = ac.addLabel(appWindow, "")
-	ac.setPosition(lblRecordCountdown, 3, 150)
-
-	global lblDeltaT
-	lblDeltaT = ac.addLabel(appWindow, "")
-	ac.setPosition(lblDeltaT, 3, 180)
 	"""
 
-	# TODO: Save button
+	# TODO: Save button, check box for local or remote saving (or both)
 	'''
 	save_button = ac.addButton(appWindow, "")
 	ac.setPosition(save_button, 70, 30)
@@ -187,9 +166,10 @@ def updateState(deltaT):
 		lapCount = currentLap
 		record_countdown = 3
 
-	# TODO experiment with IsEngineLimiterOn, NormalizedSplinePosition (position on track in 1d, [0,1]), 
+	# TODO experiment with IsEngineLimiterOn (FYC?), NormalizedSplinePosition (position on track in 1d, [0,1]), 
 	# WorldPosition (multi-dimensional coordiantes), 
 	# Can pass car id: isCarInPitlane, isCarInPit (pitbox), isConnected?
+	# Can detect teleport to pits by noticing that InPitlane and InPit both switch to true at the same time
 
 
 
@@ -197,18 +177,11 @@ def refreshUI(deltaT):
 	'''Updates the state of the UI to reflect the latest data.'''
 
 	global lblLapCount, lapCount
-	ac.setText(lblLapCount, "Laps: {}".format(lapCount))
-
-	global lblBestLap, bestLap
-	bestLap = ac.getCarState(0, acsys.CS.BestLap)
-	ac.setText(lblBestLap, "Best: {}".format(getFormattedLapTime(bestLap)))
-
-	global lblLastLap, lastLap
-	lastLap = ac.getCarState(0, acsys.CS.LastLap)
-	ac.setText(lblLastLap, "Last: {}".format(getFormattedLapTime(lastLap)))
+	ac.setText(lblLapCount, "Laps: {}".format(lapCount))  # TODO replace with laps in stint
 
 	global lblCurrentTime
-	ac.setText(lblCurrentTime, "Time: {}".format(getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))
+	ac.setText(lblCurrentTime, "Time: {}".format(
+		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))  # TODO replace with time in stint
 
 	"""
 	global lastLapInvalidated_display, lastLapInvalidated
@@ -216,13 +189,6 @@ def refreshUI(deltaT):
 
 	global off_track_display
 	ac.setText(off_track_display, "Off Track {}".format(ac.getCarState(0, acsys.CS.LapInvalidated)))
-	
-
-	global lblRecordCountdown, record_countdown
-	ac.setText(lblRecordCountdown, "record_countdown: {}".format(record_countdown))
-
-	global lblDeltaT
-	ac.setText(lblDeltaT, "record_countdown: {}".format(deltaT))
 	"""
 
 # -----------------------------------------
