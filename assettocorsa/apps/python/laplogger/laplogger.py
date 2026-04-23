@@ -122,13 +122,15 @@ def acShutdown():
 
 def log(message, level = "INFO"):
 	'''Logs a message to *py_log.txt* with the (optional) specified level tag.'''
-	ac.log("laplogger [{}]: {}".format(level, message))
+	message = "laplogger [{}]: {}".format(level, message)
+	ac.log(message)
+	ac.console(message)
 
 
 def getFormattedLapTime(lapTime, milis = True):
 	'''Returns a lap time string formatted for display. lapTime is in miliseconds'''
 
-	if (not lapTime > 0):
+	if (lapTime <= 0):
 		return "--:--:--"
 
 	minutes = int(lapTime/1000/60)
@@ -170,6 +172,8 @@ def updateState(deltaT):
 	# Can pass car id: isCarInPitlane, isCarInPit (pitbox), isConnected?
 	# Can detect teleport to pits by noticing that InPitlane and InPit both switch to true at the same time
 
+	# TODO check if car has entered/exited pitlane, teleported (inPitbox and inPitlane activate at the same time)
+
 
 
 def refreshUI(deltaT):
@@ -177,16 +181,19 @@ def refreshUI(deltaT):
 
 	ac.setText(lblLapCount, "Laps (This Stint): {}".format(lapCount))  # TODO replace with laps in stint
 
-	ac.setText(lblCurrentTime, "Time (This Stint): {}".format(
-		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime), milis=False)))  # TODO replace with time in stint
+	ac.setText(lblCurrentTime, "Time (This Stint): {}".format(  # TODO replace with time in stint
+		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime), milis=False)
+	))
 
-	"""
-	global lastLapInvalidated_display, lastLapInvalidated
-	ac.setText(lastLapInvalidated_display, "Lap Invalid {}".format(lastLapInvalidated))
+	# ac.setText(lblPitlaneTime, "Time in pitlane: {}".format(
 
-	global off_track_display
-	ac.setText(off_track_display, "Off Track {}".format(ac.getCarState(0, acsys.CS.LapInvalidated)))
-	"""
+	# ))
+	
+	global testLabel1
+	ac.setText(testLabel1, "Current Time: {}".format(datetime.now().time()))
+
+	global testLabel2
+	#ac.setText(testLabel2, "")
 
 # -----------------------------------------
 # Logging
