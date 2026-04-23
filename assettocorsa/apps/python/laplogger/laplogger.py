@@ -77,17 +77,17 @@ def acMain(ac_version):
 	lblCurrentTime = ac.addLabel(appWindow, "")
 	ac.setPosition(lblCurrentTime, 3, 60)
 
-	# TODO window for time spent in pitlane
+	global lblPitlaneTime
+	lblPitlaneTime = ac.addLabel(appWindow, "")
+	ac.setPosition(lblPitlaneTime, 3, 90)
 
-	"""
-	global lastLapInvalidated_display
-	lastLapInvalidated_display = ac.addLabel(appWindow, "")  # Is it right to initiate the variable here, compared to in the main?
-	ac.setPosition(lastLapInvalidated_display, 3, 150)
+	global testLabel1
+	testLabel1 = ac.addLabel(appWindow, "")  # Is it right to initiate the variable here, compared to in the main?
+	ac.setPosition(testLabel1, 3, 120)
 
-	global off_track_display
-	off_track_display = ac.addLabel(appWindow, "")
-	ac.setPosition(off_track_display, 3, 180)
-	"""
+	global testLabel2
+	testLabel2 = ac.addLabel(appWindow, "")
+	ac.setPosition(testLabel2, 3, 150)
 
 	# TODO: Save button, check box for local or remote saving (or both), check box for auto save (choice should be persistent, so I'll need to create a config file)
 	'''
