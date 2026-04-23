@@ -28,7 +28,7 @@ WARNING: Current way of writing to files breaks when using "Return to Garage" fu
 # The name of the custom HUD window displayed when this app is active.
 APP_NAME = "Lap Logger"
 
-# Load config file
+# Load config file (TODO have default config and custom config for better integration with github)
 with open("config.json", "r") as f:
 	config = json.load(f)
 
@@ -64,7 +64,7 @@ def acMain(ac_version):
 	log("Starting {}".format(APP_NAME))
 
 	# Setting up app window
-	global appWindow  # Is this global necessary?
+	global appWindow
 	appWindow = ac.newApp(APP_NAME)
 	ac.setSize(appWindow, 150, 200)
 	log("Initialized App Window")
@@ -181,10 +181,10 @@ def updateState(deltaT):
 def refreshUI(deltaT):
 	'''Updates the state of the UI to reflect the latest data.'''
 
-	global lblLapCount, lapCount
+	#global lblLapCount, lapCount
 	ac.setText(lblLapCount, "Laps: {}".format(lapCount))  # TODO replace with laps in stint
 
-	global lblCurrentTime
+	#global lblCurrentTime
 	ac.setText(lblCurrentTime, "Time: {}".format(
 		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))  # TODO replace with time in stint
 
@@ -224,7 +224,7 @@ def openLog():  # Should be refactored to write log
 def writeLogEntry():  # TODO: Refactor to create string that can be piped into csv or JSON output
 	'''Writes a new log entry to the log using the current state information.'''
 	# TODO: Have all lap data be cached and write to file upon button press
-	global logFile
+	#global logFile
 
 	tire_wear = info.physics.tyreWear
 
@@ -243,7 +243,7 @@ def writeLogEntry():  # TODO: Refactor to create string that can be piped into c
 
 
 def closeLog():  # TODO: Deprecate
-	global logFile
+	#global logFile
 	logFile.close()
 
 # -----------------------------------------
@@ -252,11 +252,13 @@ def closeLog():  # TODO: Deprecate
 
 def onAppDismissed():
 	ac.console("LapLogger Dismissed")
+	global active
 	active = False
 	log("Dismissed")
 
 
 def onAppActivated():
 	ac.console("LapLogger Activated")
+	global active
 	active = True
 	log("Activated")
