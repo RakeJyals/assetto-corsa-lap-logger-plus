@@ -125,7 +125,7 @@ def log(message, level = "INFO"):
 	ac.log("laplogger [{}]: {}".format(level, message))
 
 
-def getFormattedLapTime(lapTime):
+def getFormattedLapTime(lapTime, milis = True):
 	'''Returns a lap time string formatted for display. lapTime is in miliseconds'''
 
 	if (not lapTime > 0):
@@ -135,7 +135,7 @@ def getFormattedLapTime(lapTime):
 	seconds = int((lapTime/1000)%60)
 	millis = lapTime - (int((lapTime/1000))*1000)
 
-	return "{}:{:02d}:{:03d}".format(minutes, seconds, millis)
+	return "{}:{:02d}:{:03d}".format(minutes, seconds, millis) if milis else "{}:{:02d}".format(minutes, seconds)
 
 
 def updateState(deltaT):
@@ -159,6 +159,7 @@ def updateState(deltaT):
 		else:
 			record_countdown -= deltaT
 
+	# Update lap count and trigger any events that should occur on completion of lap, lapCount is used in hud and as lap id in log csv
 	currentLap = ac.getCarState(0, acsys.CS.LapCount)
 	if lapCount < currentLap:  # Check if player is on a new lap, then start countdown to log data if so
 		lapCount = currentLap
@@ -177,7 +178,7 @@ def refreshUI(deltaT):
 	ac.setText(lblLapCount, "Laps (This Stint): {}".format(lapCount))  # TODO replace with laps in stint
 
 	ac.setText(lblCurrentTime, "Time (This Stint): {}".format(
-		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))  # TODO replace with time in stint
+		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime), milis=False)))  # TODO replace with time in stint
 
 	"""
 	global lastLapInvalidated_display, lastLapInvalidated
