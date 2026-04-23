@@ -2,7 +2,7 @@ import sys
 import ac
 import acsys
 
-import os, platform
+import os, platform, json
 from datetime import datetime
 
 
@@ -27,9 +27,13 @@ WARNING: Current way of writing to files breaks when using "Return to Garage" fu
 
 # The name of the custom HUD window displayed when this app is active.
 APP_NAME = "Lap Logger"
+
+# Load config file
+with open("config.json", "r") as f:
+	config = json.load(f)
+
 # Because the script is run from the context of the main .exe we need to point to provide a relative path to this script.
-LOG_DIR = "apps/python/laplogger/logs"
-# TODO: config file with desired log path
+LOG_DIR = config["log_path"]
 
 
 # -----------------------------------------
