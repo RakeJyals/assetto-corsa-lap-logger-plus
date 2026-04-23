@@ -42,13 +42,6 @@ LOG_DIR = config["log_path"]
 
 active = False
 
-appWindow = None
-logFile = None
-
-# AC window initializations (is this the best practice?)
-lblLapCount = None
-lblCurrentTime = None
-
 record_countdown = None
 lapCount = 0
 lastLap = 0
@@ -66,7 +59,7 @@ def acMain(ac_version):
 	# Setting up app window
 	global appWindow
 	appWindow = ac.newApp(APP_NAME)
-	ac.setSize(appWindow, 150, 200)
+	ac.setSize(appWindow, 175, 200)
 	log("Initialized App Window")
 	
 	# This was commented out when I forked this project, but this would just activate the app handlers at the bottom which
@@ -171,8 +164,8 @@ def updateState(deltaT):
 		lapCount = currentLap
 		record_countdown = 3
 
-	# TODO experiment with IsEngineLimiterOn (FYC?), NormalizedSplinePosition (position on track in 1d, [0,1]), 
-	# WorldPosition (multi-dimensional coordiantes), 
+	# TODO experiment with IsEngineLimiterOn (FYC?), NormalizedSplinePosition (position on track in 1d, [0,1] - is this one even useful?), 
+	# WorldPosition (multi-dimensional coordiantes),
 	# Can pass car id: isCarInPitlane, isCarInPit (pitbox), isConnected?
 	# Can detect teleport to pits by noticing that InPitlane and InPit both switch to true at the same time
 
@@ -181,9 +174,9 @@ def updateState(deltaT):
 def refreshUI(deltaT):
 	'''Updates the state of the UI to reflect the latest data.'''
 
-	ac.setText(lblLapCount, "Laps: {}".format(lapCount))  # TODO replace with laps in stint
+	ac.setText(lblLapCount, "Laps (This Stint): {}".format(lapCount))  # TODO replace with laps in stint
 
-	ac.setText(lblCurrentTime, "Time: {}".format(
+	ac.setText(lblCurrentTime, "Time (This Stint): {}".format(
 		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))  # TODO replace with time in stint
 
 	"""
@@ -222,7 +215,6 @@ def openLog():  # Should be refactored to write log
 def writeLogEntry():  # TODO: Refactor to create string that can be piped into csv or JSON output
 	'''Writes a new log entry to the log using the current state information.'''
 	# TODO: Have all lap data be cached and write to file upon button press
-	#global logFile
 
 	tire_wear = info.physics.tyreWear
 
