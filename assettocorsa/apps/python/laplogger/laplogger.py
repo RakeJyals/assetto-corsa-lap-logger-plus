@@ -47,7 +47,6 @@ lblCurrentTime = None
 
 record_countdown = None
 lapCount = 0
-bestLap = 0
 lastLap = 0
 
 lastLapInvalidated = False
@@ -68,7 +67,7 @@ def acMain(ac_version):
 	
 	# This was commented out when I forked this project, but this would just activate the app handlers at the bottom which
 	# only send console logs and toggle the "active" variable, which is unused
-	# These listeners also seem to be nonfunctional
+	# These listeners also seem to be nonfunctional TODO check other projects to see if they successfully integrate these
 	#ac.addOnAppActivatedListener(appWindow, onAppActivated)
 	#ac.addOnAppDismissedListener(appWindow, onAppDismissed)
 
@@ -93,7 +92,7 @@ def acMain(ac_version):
 	ac.setPosition(off_track_display, 3, 180)
 	"""
 
-	# TODO: Save button, check box for local or remote saving (or both)
+	# TODO: Save button, check box for local or remote saving (or both), check box for auto save (choice should be persistent, so I'll need to create a config file)
 	'''
 	save_button = ac.addButton(appWindow, "")
 	ac.setPosition(save_button, 70, 30)
