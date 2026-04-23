@@ -29,10 +29,10 @@ WARNING: Current way of writing to files breaks when using "Return to Garage" fu
 APP_NAME = "Lap Logger"
 
 # Load config file (TODO have default config and custom config for better integration with github)
-with open("config.json", "r") as f:
+# Because the script is run from the context of the main .exe we need to point to provide a relative path to this script.
+with open("apps/python/laplogger/config.json", "r") as f:
 	config = json.load(f)
 
-# Because the script is run from the context of the main .exe we need to point to provide a relative path to this script.
 LOG_DIR = config["log_path"]
 
 
@@ -181,10 +181,8 @@ def updateState(deltaT):
 def refreshUI(deltaT):
 	'''Updates the state of the UI to reflect the latest data.'''
 
-	#global lblLapCount, lapCount
 	ac.setText(lblLapCount, "Laps: {}".format(lapCount))  # TODO replace with laps in stint
 
-	#global lblCurrentTime
 	ac.setText(lblCurrentTime, "Time: {}".format(
 		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime))))  # TODO replace with time in stint
 
@@ -243,7 +241,6 @@ def writeLogEntry():  # TODO: Refactor to create string that can be piped into c
 
 
 def closeLog():  # TODO: Deprecate
-	#global logFile
 	logFile.close()
 
 # -----------------------------------------
