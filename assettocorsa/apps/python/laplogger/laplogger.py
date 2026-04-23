@@ -65,8 +65,10 @@ def acMain(ac_version):
 	appWindow = ac.newApp(APP_NAME)
 	ac.setSize(appWindow, 150, 200)
 	log("Initialized App Window")
+	
 	# This was commented out when I forked this project, but this would just activate the app handlers at the bottom which
 	# only send console logs and toggle the "active" variable, which is unused
+	# These listeners also seem to be nonfunctional
 	#ac.addOnAppActivatedListener(appWindow, onAppActivated)
 	#ac.addOnAppDismissedListener(appWindow, onAppDismissed)
 
@@ -123,7 +125,7 @@ def acShutdown():
 # -----------------------------------------
 
 def log(message, level = "INFO"):
-	'''Logs a message to the py_log with the (optional) specified level tag.'''
+	'''Logs a message to *py_log.txt* with the (optional) specified level tag.'''
 	ac.log("laplogger [{}]: {}".format(level, message))
 
 
