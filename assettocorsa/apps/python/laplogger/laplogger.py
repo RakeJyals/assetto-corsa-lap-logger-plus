@@ -28,7 +28,7 @@ WARNING: Current way of writing to files breaks when using "Return to Garage" fu
 # The name of the custom HUD window displayed when this app is active.
 APP_NAME = "Lap Logger"
 
-# Load config file (TODO have default config and custom config for better integration with github)
+# Load config file (TODO have default config and custom config for better integration with github - script crashes when trying to run os.path.exists here?)
 # Because the script is run from the context of the main .exe we need to point to provide a relative path to this script.
 with open("apps/python/laplogger/config.json", "r") as f:
 	config = json.load(f)
