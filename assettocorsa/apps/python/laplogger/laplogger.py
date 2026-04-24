@@ -213,11 +213,11 @@ def updateState(deltaT):  # TODO consider reducing frequency at which this gets 
 	# Pitlane
 	if in_pitlane == 1:
 		# Set new time difference
-		pitlaneElapsed = datetime.now() - pitlaneStart if pitlaneStart else None
+		pitlaneElapsed = datetime.now() - pitlaneStart if pitlaneStart is not None else None
 	# Stint
 	else:
 		# Set new time difference
-		stintElapsed = datetime.now() - stintStart if stintStart else None
+		stintElapsed = datetime.now() - stintStart if stintStart is not None else None
 
 
 def refreshUI(deltaT):
@@ -229,22 +229,22 @@ def refreshUI(deltaT):
 	
 	global lblCurrentTime
 	ac.setText(lblCurrentTime, "Time (This Stint): {}".format(
-		str(stintElapsed.time()).split(".")[0] if stintElapsed else "--:--:--"  # TODO standardize and integrate with getFormattedLapTime
+		str(stintElapsed).split(".")[0] if stintElapsed else "--:--:--"  # TODO standardize and integrate with getFormattedLapTime
 	))
 
 	global lblPitlaneTime
 	ac.setText(lblPitlaneTime, "Time In Pitlane: {}".format(
-		str(pitlaneElapsed.time()).split(".")[0] if pitlaneElapsed else "--:--:--"
+		str(pitlaneElapsed).split(".")[0] if pitlaneElapsed else "--:--:--"
 	))
 	
-	global testLabel1
-	ac.setText(testLabel1, "Current Time: {}".format(str(datetime.now().time()).split(".")[0]))  # This way of dropping subseconds is a bodge but will do for now
+	# global testLabel1
+	# ac.setText(testLabel1, "Current Time: {}".format(str(datetime.now().time()).split(".")[0]))  # This way of dropping subseconds is a bodge but will do for now
 
-	global testLabel2
-	ac.setText(testLabel2, "In pitlane: {}".format(ac.isCarInPitlane(0)))
+	# global testLabel2
+	# ac.setText(testLabel2, "In pitlane: {}".format(ac.isCarInPitlane(0)))
 
-	global testLabel3
-	ac.setText(testLabel3, "In pitbox: {}".format(ac.isCarInPit(0)))  # Note - still returns 1 if car is just driving through pit box and not stopping, so we'll need to check for low speed as well
+	# global testLabel3
+	# ac.setText(testLabel3, "In pitbox: {}".format(ac.isCarInPit(0)))  # Note - still returns 1 if car is just driving through pit box and not stopping, so we'll need to check for low speed as well
 
 # -----------------------------------------
 # Logging
