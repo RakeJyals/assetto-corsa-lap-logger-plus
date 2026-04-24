@@ -175,7 +175,7 @@ def updateState(deltaT):
 
 	# TODO experiment with IsEngineLimiterOn (FYC?), NormalizedSplinePosition (position on track in 1d, [0,1] - is this one even useful?), 
 	# WorldPosition (multi-dimensional coordiantes),
-	# Can pass car id: isCarInPitlane, isCarInPit (pitbox), isConnected?
+	# Can pass car id: isCarInPitlane, isCarInPit (pitbox), isConnected?, getCarState(, "SpeedKMH")
 	# Can detect teleport to pits by noticing that InPitlane and InPit both switch to true at the same time
 
 	# TODO check if car has entered/exited pitlane, teleported (inPitbox and inPitlane activate at the same time)
@@ -196,13 +196,13 @@ def refreshUI(deltaT):
 	# ))
 	
 	global testLabel1
-	ac.setText(testLabel1, "Current Time: {}".format(datetime.now().time()))
+	ac.setText(testLabel1, "Current Time: {}".format(str(datetime.now().time()).split(".")[0]))  # This way of dropping subseconds is a bodge but will do for now
 
 	global testLabel2
 	ac.setText(testLabel2, "In pitlane: {}".format(ac.isCarInPitlane(0)))
 
 	global testLabel3
-	ac.setText(testLabel3, "In pitbox: {}".format(ac.isCarInPit(0)))
+	ac.setText(testLabel3, "In pitbox: {}".format(ac.isCarInPit(0)))  # Note - still returns 1 if car is just driving through pit box and not stopping, so we'll need to check for low speed as well
 
 # -----------------------------------------
 # Logging
