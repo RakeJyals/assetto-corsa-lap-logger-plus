@@ -47,6 +47,8 @@ lapCount = 0
 lastLap = 0
 
 lastLapInvalidated = False
+wasInPitlane = True
+wasInPitBox = True
 
 # -----------------------------------------
 # Asseto Corsa Events
@@ -88,6 +90,10 @@ def acMain(ac_version):
 	global testLabel2
 	testLabel2 = ac.addLabel(appWindow, "")
 	ac.setPosition(testLabel2, 3, 150)
+
+	global testLabel3
+	testLabel3 = ac.addLabel(appWindow, "")
+	ac.setPosition(testLabel3, 3, 180)
 
 	# TODO: Save button, check box for local or remote saving (or both), check box for auto save (choice should be persistent, so I'll need to create a config file)
 	'''
@@ -193,7 +199,10 @@ def refreshUI(deltaT):
 	ac.setText(testLabel1, "Current Time: {}".format(datetime.now().time()))
 
 	global testLabel2
-	#ac.setText(testLabel2, "")
+	ac.setText(testLabel2, "In pitlane: {}".format(ac.isCarInPitlane(0)))
+
+	global testLabel3
+	ac.setText(testLabel3, "In pitbox: {}".format(ac.isCarInPit(0)))
 
 # -----------------------------------------
 # Logging
