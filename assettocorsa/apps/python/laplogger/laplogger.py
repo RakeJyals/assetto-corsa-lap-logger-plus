@@ -169,6 +169,8 @@ def updateState(deltaT):  # TODO consider reducing frequency at which this gets 
 	if ac.getCarState(0, acsys.CS.LapInvalidated) != 0:  # Tested value can be 0 or 1
 		lastLapInvalidated = True
 
+	in_pitlane = ac.isCarInPitlane(0)
+
 	
 	# Record lap info once enough time has passed for all memory to update
 	if record_countdown:
@@ -183,7 +185,8 @@ def updateState(deltaT):  # TODO consider reducing frequency at which this gets 
 	currentLap = ac.getCarState(0, acsys.CS.LapCount)
 	if lapCount < currentLap:  # Check if player is on a new lap, then start countdown to log data if so
 		lapCount = currentLap
-		lapCountStint += 1  # Assuming that currentLap can't increase by more than 1
+		if not in_pitlane:
+			lapCountStint += 1  # Assuming that currentLap can't increase by more than 1
 		record_countdown = 3
 
 	# TODO experiment with IsEngineLimiterOn (FYC?), NormalizedSplinePosition (position on track in 1d, [0,1] - is this one even useful?), 
@@ -194,12 +197,13 @@ def updateState(deltaT):  # TODO consider reducing frequency at which this gets 
 	# TODO check if car has teleported (inPitbox and inPitlane activate at the same time)
 
 	# Entered/exited pitlane
-	in_pitlane = ac.isCarInPitlane(0)
 	if wasInPitlane != in_pitlane:
 		# Entering pitlane
 		if wasInPitlane == 0:
 			# Start new pitlane timer
 			pitlaneStart = datetime.now()
+			# Autoincrement lap count to signify completed lap (lap count increase gets disabled) TODO complete all lap completion actions for logging
+			lapCountStint += 1
 		# Exiting pitlane
 		else:
 			# Start new stint timer
