@@ -43,18 +43,20 @@ LOG_DIR = config["log_path"]
 active = False
 
 record_countdown = None
-lapCount = 0
-lapCountStint = 0
-lastLap = 0
+lap_count = 0
+lap_count_stint = 0
+last_lap = 0
 # Placeholders for datetimes
-stintStart = None
-pitlaneStart = None
-stintElapsed = None
-pitlaneElapsed = None
+stint_start = None
+pitlane_start = None
+stint_elapsed = None
+pitlane_elapsed = None
 
-lastLapInvalidated = False
-wasInPitlane = 1
-wasInPitBox = 1
+last_lap_invalidated = False
+was_in_pitlane = 1
+was_in_pit_box = 1
+
+data = []  # JSON object
 
 # -----------------------------------------
 # Asseto Corsa Events
@@ -72,7 +74,7 @@ def acMain(ac_version):
 	
 	# This was commented out when I forked this project, but this would just activate the app handlers at the bottom which
 	# only send console logs and toggle the "active" variable, which is unused
-	# These listeners also seem to be nonfunctional TODO check other projects to see if they successfully integrate these
+	# These listeners also seem to be nonfunctional TODO check other projects to see if they successfully integrate these?
 	#ac.addOnAppActivatedListener(appWindow, onAppActivated)
 	#ac.addOnAppDismissedListener(appWindow, onAppDismissed)
 
@@ -139,15 +141,15 @@ def log(message, level = "INFO"):
 	ac.console(message)
 
 
-def getFormattedLapTime(lapTime, milis = True):  # TODO figure out whether to support hours, datetime format
+def getFormattedLapTime(lap_time, milis = True):  # TODO figure out whether to support hours, datetime format
 	'''Returns a lap time string formatted for display. lapTime is in miliseconds'''
 
-	if (lapTime <= 0):
+	if (lap_time <= 0):
 		return "--:--:--"
 
-	minutes = int(lapTime/1000/60)
-	seconds = int((lapTime/1000)%60)
-	millis = lapTime - (int((lapTime/1000))*1000)
+	minutes = int(lap_time/1000/60)
+	seconds = int((lap_time/1000)%60)
+	millis = lap_time - (int((lap_time/1000))*1000)
 
 	return "{}:{:02d}:{:03d}".format(minutes, seconds, millis) if milis else "{}:{:02d}".format(minutes, seconds)
 
@@ -155,19 +157,19 @@ def getFormattedLapTime(lapTime, milis = True):  # TODO figure out whether to su
 def updateState(deltaT):  # TODO consider reducing frequency at which this gets run, especially for parts with low need for precision
 	'''Updates the state of all variables required for logging.'''
 
-	global lastLapInvalidated
+	global last_lap_invalidated
 	global record_countdown
-	global lapCount
-	global lapCountStint
-	global wasInPitlane
-	global pitlaneStart
-	global stintStart
-	global pitlaneElapsed
-	global stintElapsed
+	global lap_count
+	global lap_count_stint
+	global was_in_pitlane
+	global pitlane_start
+	global stint_start
+	global pitlane_elapsed
+	global stint_elapsed
 
 	# Not working, not important to get fixed
 	if ac.getCarState(0, acsys.CS.LapInvalidated) != 0:  # Tested value can be 0 or 1
-		lastLapInvalidated = True
+		last_lap_invalidated = True
 
 	in_pitlane = ac.isCarInPitlane(0)
 
@@ -176,17 +178,17 @@ def updateState(deltaT):  # TODO consider reducing frequency at which this gets 
 	if record_countdown:
 		if record_countdown < deltaT:
 			writeLogEntry()
-			lastLapInvalidated = False
+			last_lap_invalidated = False
 			record_countdown = None
 		else:
 			record_countdown -= deltaT
 
-	# Update lap count and trigger any events that should occur on completion of lap, lapCount is used in hud and as lap id in log csv
-	currentLap = ac.getCarState(0, acsys.CS.LapCount)
-	if lapCount < currentLap:  # Check if player is on a new lap, then start countdown to log data if so
-		lapCount = currentLap
+	# Update lap count and trigger any events that should occur on completion of lap, lap_count is used in hud and as lap id in log csv
+	current_lap = ac.getCarState(0, acsys.CS.LapCount)
+	if lap_count < current_lap:  # Check if player is on a new lap, then start countdown to log data if so
+		lap_count = current_lap
 		if not in_pitlane:
-			lapCountStint += 1  # Assuming that currentLap can't increase by more than 1
+			lap_count_stint += 1  # Assuming that current_lap can't increase by more than 1
 		record_countdown = 3
 
 	# TODO experiment with IsEngineLimiterOn (FYC?), NormalizedSplinePosition (position on track in 1d, [0,1] - is this one even useful?), 
@@ -197,48 +199,49 @@ def updateState(deltaT):  # TODO consider reducing frequency at which this gets 
 	# TODO check if car has teleported (inPitbox and inPitlane activate at the same time)
 
 	# Entered/exited pitlane
-	if wasInPitlane != in_pitlane:
+	if was_in_pitlane != in_pitlane:
 		# Entering pitlane
-		if wasInPitlane == 0:
+		if was_in_pitlane == 0:
 			# Start new pitlane timer
-			pitlaneStart = datetime.now()
+			pitlane_start = datetime.now()
 			# Autoincrement lap count to signify completed lap (lap count increase gets disabled) TODO complete all lap completion actions for logging
-			lapCountStint += 1
+			lap_count_stint += 1
 		# Exiting pitlane
 		else:
 			# Start new stint timer
-			stintStart = datetime.now()
+			stint_start = datetime.now()
 			# Reset number of laps completed in stint
-			lapCountStint = 0
+			lap_count_stint = 0
+			# TODO actions needed at start of lap, eg. checking fuel
 
-	wasInPitlane = in_pitlane
+	was_in_pitlane = in_pitlane
 	
 	# Update stint, pitlane timers TODO edge case behavior
 	# Pitlane
 	if in_pitlane == 1:
 		# Set new time difference
-		pitlaneElapsed = datetime.now() - pitlaneStart if pitlaneStart is not None else None
+		pitlane_elapsed = datetime.now() - pitlane_start if pitlane_start is not None else None
 	# Stint
 	else:
 		# Set new time difference
-		stintElapsed = datetime.now() - stintStart if stintStart is not None else None
+		stint_elapsed = datetime.now() - stint_start if stint_start is not None else None
 
 
 def refreshUI(deltaT):
 	'''Updates the state of the UI to reflect the latest data.'''
 	
 	global lblLapCount
-	global stintElapsed
-	ac.setText(lblLapCount, "Laps (This Stint): {}".format(lapCountStint))
+	global stint_elapsed
+	ac.setText(lblLapCount, "Laps (This Stint): {}".format(lap_count_stint))
 	
 	global lblCurrentTime
 	ac.setText(lblCurrentTime, "Time (This Stint): {}".format(
-		str(stintElapsed).split(".")[0] if stintElapsed else "--:--:--"  # TODO standardize and integrate with getFormattedLapTime
+		str(stint_elapsed).split(".")[0] if stint_elapsed else "--:--:--"  # TODO standardize and integrate with getFormattedLapTime
 	))
 
 	global lblPitlaneTime
 	ac.setText(lblPitlaneTime, "Time In Pitlane: {}".format(
-		str(pitlaneElapsed).split(".")[0] if pitlaneElapsed else "--:--:--"
+		str(pitlane_elapsed).split(".")[0] if pitlane_elapsed else "--:--:--"
 	))
 	
 	# global testLabel1
@@ -266,7 +269,7 @@ def openLog():  # Should be refactored to write log
 	if not os.path.exists(LOG_DIR):
 		os.mkdir(LOG_DIR)
 
-	shouldInit = not os.path.exists("{}/{}".format(LOG_DIR, LOG_NAME))
+	#should_init = not os.path.exists("{}/{}".format(LOG_DIR, LOG_NAME))
 		
 	global logFile
 	logFile = open("{}/{}".format(LOG_DIR, LOG_NAME), "a+")
@@ -282,14 +285,14 @@ def writeLogEntry():  # TODO: Refactor to create string that can be piped into c
 	tire_wear = info.physics.tyreWear
 
 	lapData = "{},{},{},{},{},{},{}".format(
-		lapCount,
+		lap_count,
 		ac.getCarState(0, acsys.CS.LastLap),
 		round(info.physics.fuel, 2),
 		round(tire_wear[0], 2),
 		round(tire_wear[1], 2),
 		round(tire_wear[2], 2),
 		round(tire_wear[3], 2)
-		# lastLapInvalidated
+		# last_lap_invalidated
 	)
 
 	logFile.write("{}\n".format(lapData))
