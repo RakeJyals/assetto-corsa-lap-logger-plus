@@ -44,11 +44,17 @@ active = False
 
 record_countdown = None
 lapCount = 0
+lapCountStint = 0
 lastLap = 0
+# Placeholders for datetimes
+stintStart = None
+pitlaneStart = None
+stintElapsed = None
+pitlaneElapsed = None
 
 lastLapInvalidated = False
-wasInPitlane = True
-wasInPitBox = True
+wasInPitlane = 1
+wasInPitBox = 1
 
 # -----------------------------------------
 # Asseto Corsa Events
@@ -61,7 +67,7 @@ def acMain(ac_version):
 	# Setting up app window
 	global appWindow
 	appWindow = ac.newApp(APP_NAME)
-	ac.setSize(appWindow, 175, 200)
+	ac.setSize(appWindow, 175, 210)
 	log("Initialized App Window")
 	
 	# This was commented out when I forked this project, but this would just activate the app handlers at the bottom which
@@ -133,7 +139,7 @@ def log(message, level = "INFO"):
 	ac.console(message)
 
 
-def getFormattedLapTime(lapTime, milis = True):
+def getFormattedLapTime(lapTime, milis = True):  # TODO figure out whether to support hours, datetime format
 	'''Returns a lap time string formatted for display. lapTime is in miliseconds'''
 
 	if (lapTime <= 0):
@@ -146,12 +152,18 @@ def getFormattedLapTime(lapTime, milis = True):
 	return "{}:{:02d}:{:03d}".format(minutes, seconds, millis) if milis else "{}:{:02d}".format(minutes, seconds)
 
 
-def updateState(deltaT):
+def updateState(deltaT):  # TODO consider reducing frequency at which this gets run, especially for parts with low need for precision
 	'''Updates the state of all variables required for logging.'''
 
 	global lastLapInvalidated
 	global record_countdown
 	global lapCount
+	global lapCountStint
+	global wasInPitlane
+	global pitlaneStart
+	global stintStart
+	global pitlaneElapsed
+	global stintElapsed
 
 	# Not working, not important to get fixed
 	if ac.getCarState(0, acsys.CS.LapInvalidated) != 0:  # Tested value can be 0 or 1
@@ -171,6 +183,7 @@ def updateState(deltaT):
 	currentLap = ac.getCarState(0, acsys.CS.LapCount)
 	if lapCount < currentLap:  # Check if player is on a new lap, then start countdown to log data if so
 		lapCount = currentLap
+		lapCountStint += 1  # Assuming that currentLap can't increase by more than 1
 		record_countdown = 3
 
 	# TODO experiment with IsEngineLimiterOn (FYC?), NormalizedSplinePosition (position on track in 1d, [0,1] - is this one even useful?), 
@@ -178,22 +191,51 @@ def updateState(deltaT):
 	# Can pass car id: isCarInPitlane, isCarInPit (pitbox), isConnected?, getCarState(, "SpeedKMH")
 	# Can detect teleport to pits by noticing that InPitlane and InPit both switch to true at the same time
 
-	# TODO check if car has entered/exited pitlane, teleported (inPitbox and inPitlane activate at the same time)
+	# TODO check if car has teleported (inPitbox and inPitlane activate at the same time)
 
+	# Entered/exited pitlane
+	in_pitlane = ac.isCarInPitlane(0)
+	if wasInPitlane != in_pitlane:
+		# Entering pitlane
+		if wasInPitlane == 0:
+			# Start new pitlane timer
+			pitlaneStart = datetime.now()
+		# Exiting pitlane
+		else:
+			# Start new stint timer
+			stintStart = datetime.now()
+			# Reset number of laps completed in stint
+			lapCountStint = 0
+
+	wasInPitlane = in_pitlane
+	
+	# Update stint, pitlane timers TODO edge case behavior
+	# Pitlane
+	if in_pitlane == 1:
+		# Set new time difference
+		pitlaneElapsed = datetime.now() - pitlaneStart if pitlaneStart else None
+	# Stint
+	else:
+		# Set new time difference
+		stintElapsed = datetime.now() - stintStart if stintStart else None
 
 
 def refreshUI(deltaT):
 	'''Updates the state of the UI to reflect the latest data.'''
-
-	ac.setText(lblLapCount, "Laps (This Stint): {}".format(lapCount))  # TODO replace with laps in stint
-
-	ac.setText(lblCurrentTime, "Time (This Stint): {}".format(  # TODO replace with time in stint
-		getFormattedLapTime(ac.getCarState(0, acsys.CS.LapTime), milis=False)
+	
+	global lblLapCount
+	global stintElapsed
+	ac.setText(lblLapCount, "Laps (This Stint): {}".format(lapCountStint))
+	
+	global lblCurrentTime
+	ac.setText(lblCurrentTime, "Time (This Stint): {}".format(
+		str(stintElapsed.time()).split(".")[0] if stintElapsed else "--:--:--"  # TODO standardize and integrate with getFormattedLapTime
 	))
 
-	# ac.setText(lblPitlaneTime, "Time in pitlane: {}".format(
-
-	# ))
+	global lblPitlaneTime
+	ac.setText(lblPitlaneTime, "Time In Pitlane: {}".format(
+		str(pitlaneElapsed.time()).split(".")[0] if pitlaneElapsed else "--:--:--"
+	))
 	
 	global testLabel1
 	ac.setText(testLabel1, "Current Time: {}".format(str(datetime.now().time()).split(".")[0]))  # This way of dropping subseconds is a bodge but will do for now
